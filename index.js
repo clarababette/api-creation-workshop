@@ -95,12 +95,21 @@ app.get('/api/garments/price/:price', authenticateToken, (req, res) => {
   });
 });
 
+const generateAccessToken = (user) => {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: '24h',
+  });
+};
+
 app.post('/auth', (req, res) => {
   const username = req.query.username;
-  const user = {name: username};
-
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-  res.json({accessToken: accessToken});
+  if (username == 'clarababette') {
+    const user = {username: 'clarababette'};
+    const accessToken = generateAccessToken(user);
+    //const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: '24h'});
+    res.json({accessToken: accessToken});
+  }
+  res.sendStatus(401);
 });
 
 function authenticateToken(req, res, next) {
