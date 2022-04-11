@@ -63,11 +63,16 @@ priceRangeElem.addEventListener('change', function (evt) {
 });
 
 const login = () => {
-  axios.post(`/auth?username=${usernameElem.value}`).then((result) => {
-    localStorage.setItem('accessToken', result.data.accessToken);
-    accessUpdate();
-    filterData();
-  });
+  axios
+    .post(`/auth?username=${usernameElem.value}`)
+    .then((result) => {
+      localStorage.setItem('accessToken', result.data.accessToken);
+      accessUpdate();
+      filterData();
+    })
+    .catch((err) => {
+      loginElem.innerHTML += `<div style="color:red;">Access Denied<div>`;
+    });
 };
 
 loginBtn.addEventListener('click', () => {
