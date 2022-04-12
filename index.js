@@ -25,6 +25,9 @@ const connectionString =
   'postgresql://missy_tee:missy123@localhost:5432/missy_tee_app';
 const pool = new Pool({
   connectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 const garmentManager = GarmentManager(pool);
