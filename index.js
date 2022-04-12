@@ -16,24 +16,25 @@ const PORT = process.env.PORT || 4017;
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
+const GarmentManager = require('./shop/garment-manager');
+const pg = require('pg');
+const Pool = pg.Pool;
+
+const connectionString =
+  process.env.DATABASE_URL ||
+  'postgresql://missy_tee:missy123@localhost:5432/missy_tee_app';
+const pool = new Pool({
+  connectionString,
+});
+
+const garmentManager = GarmentManager(pool);
+
 // API routes to be added here
 
-app.get('/api/garments', authenticateToken, (req, res) => {
+app.get('/api/garments', authenticateToken, async (req, res) => {
   const gender = req.query.gender;
   const season = req.query.season;
-  const filteredGarments = garments.filter((garment) => {
-    // if both gender & season was supplied
-    if (gender != 'All' && season != 'All') {
-      return garment.gender === gender && garment.season === season;
-    } else if (gender != 'All') {
-      // if gender was supplied
-      return garment.gender === gender;
-    } else if (season != 'All') {
-      // if season was supplied
-      return garment.season === season;
-    }
-    return true;
-  });
+  const filteredGarments = await garmentManager.filter({gender, season});
   res.json({
     garments: filteredGarments,
   });
